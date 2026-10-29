@@ -7,8 +7,6 @@ from starlette.templating import Jinja2Templates
 
 from DataBase import Session, ToDoList
 
-load_dotenv()
-
 templates = Jinja2Templates(directory='templates')
 
 app = FastAPI()
