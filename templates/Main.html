@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой ToDo список</title>
+    <link rel="stylesheet" href="/static/style.css?v=7">
+</head>
+<body>
+    <!-- Шапка профиля -->
+    <header class="profile-header">
+        <div class="profile">
+            <div class="avatar">👤</div>
+            <div class="profile-info">
+                <div class="username">Sergey</div>
+                <div class="status">онлайн</div>
+            </div>
+        </div>
+        <div class="header-title">Мои задачи</div>
+    </header>
+
+    <div class="page">
+        <!-- Основной контент -->
+        <main class="container">
+            <p class="subtitle">Одностраничный список дел</p>
+
+            <!-- Форма добавления -->
+            <form method="post" action="/" class="add-form">
+                <div class="input-group">
+                    <input type="text" name="Zametka" placeholder="Что нужно сделать?" required autocomplete="off">
+                    <label class="status-toggle">
+                        <input type="checkbox" name="Status" value="true">
+                        <span>Выполнено</span>
+                    </label>
+                </div>
+                <button type="submit" class="add-btn">+ Добавить</button>
+            </form>
+
+            <!-- Список задач -->
+            <ul class="task-list">
+                {% if tasks %}
+                    {% for task in tasks %}
+                    <li class="task-item {% if task.Status %}completed{% endif %}">
+                        <div class="task-content">
+                            <span class="task-status">{% if task.Status %}✓{% else %}○{% endif %}</span>
+                            <span class="task-text">{{ task.Zametka }}</span>
+                        </div>
+
+                        <div class="task-actions">
+                            <span class="task-badge {% if task.Status %}done{% else %}pending{% endif %}">
+                                {% if task.Status %}Готово{% else %}В работе{% endif %}
+                            </span>
+
+                            <!-- Кнопка редактирования -->
+                            <button type="button" class="edit-btn" onclick="toggleEdit({{ task.id }})" title="Изменить">✎</button>
+
+                            <!-- Удаление -->
+                            <form method="post" action="/delete/{{ task.id }}" style="display: inline;">
+                                <button type="submit" class="delete-btn" title="Удалить">✕</button>
+                            </form>
+                        </div>
+                    </li>
+
+                    <!-- Скрытая форма редактирования -->
+                    <li class="edit-form-item" id="edit-{{ task.id }}" style="display: none;">
+                        <form method="post" action="/edit/{{ task.id }}" class="edit-form">
+                            <input type="text" name="Zametks" value="{{ task.Zametka }}" required>
+                            <label class="status-toggle">
+                                <input type="checkbox" name="Status" value="true" {% if task.Status %}checked{% endif %}>
+                                <span>Выполнено</span>
+                            </label>
+                            <button type="submit" class="save-btn">Сохранить</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <p>Пока нет задач</p>
+                    </li>
+                {% endif %}
+            </ul>
+        </main>
+    </div>
+
+    <script>
+        function toggleEdit(id) {
+            const form = document.getElementById('edit-' + id);
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
